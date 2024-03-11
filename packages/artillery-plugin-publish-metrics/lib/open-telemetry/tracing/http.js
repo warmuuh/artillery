@@ -137,10 +137,10 @@ class OTelHTTPTraceReporter extends OTelTraceBase {
       span.setAttributes({
         [SemanticAttributes.HTTP_STATUS_CODE]: res.statusCode,
         [SemanticAttributes.HTTP_REQUEST_CONTENT_LENGTH]:
-          res.request.options.headers['content-length'],
+          req.headers['content-length'],
         [SemanticAttributes.HTTP_FLAVOR]: res.httpVersion,
         [SemanticAttributes.HTTP_USER_AGENT]:
-          res.request.options.headers['user-agent']
+          req.headers['user-agent']
       });
 
       if (res.statusCode >= this.statusAsErrorThreshold) {
@@ -149,7 +149,7 @@ class OTelHTTPTraceReporter extends OTelTraceBase {
           message: res.statusMessage
         });
       }
-      if (!span.endTime[0]) {
+      if (!span.endTime) {
         span.end(endTime || Date.now());
         this.pendingRequestSpans--;
       }
@@ -164,7 +164,7 @@ class OTelHTTPTraceReporter extends OTelTraceBase {
     const requestSpan = userContext.vars.__otlpHTTPRequestSpan;
     // If the error happened outside the request, the request span will be handled in the afterResponse hook
     // If the error happens on the request we set the exception on the request, otherwise we set it to the scenario span
-    if (!requestSpan.endTime[0]) {
+    if (!requestSpan.endTime) {
       requestSpan.recordException(err);
       requestSpan.setStatus({
         code: SpanStatusCode.ERROR,

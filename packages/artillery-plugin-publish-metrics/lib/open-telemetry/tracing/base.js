@@ -105,7 +105,7 @@ class OTelTraceBase {
   }
   // Sets the tracer by engine type, starts the scenario span and adds it to the VU context
   startScenarioSpan(engine) {
-    return function (userContext, ee, next) {
+    return function(userContext, ee, next) {
       const span = this[`${engine}Tracer`].startSpan(
         userContext.scenario?.name || `artillery-${engine}-scenario`,
         {
@@ -130,9 +130,9 @@ class OTelTraceBase {
   }
 
   endScenarioSpan(engine) {
-    return function (userContext, ee, next) {
+    return function(userContext, ee, next) {
       const span = userContext.vars[`__${engine}ScenarioSpan`];
-      if (!span.endTime[0]) {
+      if (!span.endTime) {
         span.end(Date.now());
         this.pendingScenarioSpans--;
       }
